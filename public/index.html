@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GNSS日期转换工具</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0f0f0f;
+            color: #00ffcc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+            width: 350px;
+            text-align: center;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        h1 {
+            color: #00ffcc;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00ffcc;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #00ffcc;
+            border-radius: 4px;
+            background-color: #0f0f0f;
+            color: #00ffcc;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .input-group button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            background-color: #00ffcc;
+            color: #0f0f0f;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .input-group button:hover {
+            background-color: #009999;
+        }
+
+        .output-group {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #0f0f0f;
+            border: 1px solid #00ffcc;
+            border-radius: 4px;
+            text-align: left;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .output-group p {
+            margin: 5px 0;
+        }
+
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .theme-switch input[type="checkbox"] {
+            height: 0;
+            width: 0;
+            visibility: hidden;
+            position: absolute;
+        }
+
+        .theme-switch label {
+            cursor: pointer;
+            text-indent: -9999px;
+            width: 52px;
+            height: 27px;
+            background: #00ffcc;
+            display: block;
+            border-radius: 100px;
+            position: relative;
+        }
+
+        .theme-switch label:after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 21px;
+            height: 21px;
+            background: #fff;
+            border-radius: 90px;
+            transition: 0.3s;
+        }
+
+        .theme-switch input:checked + label {
+            background: #009999;
+        }
+
+        .theme-switch input:checked + label:after {
+            left: calc(100% - 3px);
+            transform: translateX(-100%);
+        }
+
+        .theme-switch label:active:after {
+            width: 35px;
+        }
+
+        .light-theme {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .light-theme .container {
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        .light-theme h1 {
+            color: #ff00ff;
+        }
+
+        .light-theme .input-group label {
+            color: #333;
+        }
+
+        .light-theme .input-group input {
+            background-color: #ffffff;
+            color: #333;
+            border: 1px solid #ff00ff;
+        }
+
+        .light-theme .input-group button {
+            background-color: #ff00ff;
+            color: #fff;
+        }
+
+        .light-theme .input-group button:hover {
+            background-color: #cc00cc;
+        }
+
+        .light-theme .output-group {
+            background-color: #ffffff;
+            border: 1px solid #ff00ff;
+        }
+
+        /* Additional neon glow effect */
+        .light-theme .container,
+        .light-theme h1,
+        .light-theme .input-group input,
+        .light-theme .input-group button,
+        .light-theme .output-group {
+            text-shadow: 0 0 1px #ff00ff, 0 0 1px #ff00ff, 0 0 1px #ff00ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="theme-switch">
+    <input type="checkbox" id="theme-switch-checkbox" onchange="toggleTheme()">
+    <label for="theme-switch-checkbox">切换主题</label>
+</div>
+
+<div class="container">
+    <h1>GNSS Date Converter</h1>
+
+    <div class="input-group">
+        <label>Year, DOY:</label>
+        <input type="number" id="year1" placeholder="Year ex. 2024">
+        <input type="number" id="doy" placeholder="DOY ex. 123">
+        <button onclick="convertYearDoy()">Convert</button>
+    </div>
+
+    <div class="input-group">
+        <label>GPS Week, DOW:</label>
+        <input type="number" id="gpsWeek" placeholder="GPS Week ex. 2150">
+        <input type="number" id="dayOfWeek" placeholder="DOW ex. (0-6))">
+        <button onclick="convertGpsWeek()">Convert</button>
+    </div>
+
+    <div class="input-group">
+        <label>Year, Month, Day:</label>
+        <input type="number" id="year2" placeholder="Year ex. 2024">
+        <input type="number" id="month" placeholder="Month ex. 8">
+        <input type="number" id="day" placeholder="Day ex. 8">
+        <button onclick="convertYearMonthDay()">Convert</button>
+    </div>
+
+    <div class="output-group" id="output">
+        <!-- 转换结果将在此显示 -->
+    </div>
+</div>
+
+<script>
+    function convertYearDoy() {
+        const year = parseInt(document.getElementById('year1').value);
+        const doy = parseInt(document.getElementById('doy').value);
+        const date = new Date(Date.UTC(year, 0, 1));
+        date.setUTCDate(doy);
+
+        const gpsWeek = Math.floor((date - new Date(Date.UTC(1980, 0, 6))) / (7 * 24 * 60 * 60 * 1000));
+        const dayOfWeek = date.getUTCDay();
+        const yearMonthDay = date.toISOString().split('T')[0];
+
+        displayOutput({
+            gpsWeek: `${gpsWeek}-${dayOfWeek}`,
+            yearMonthDay: yearMonthDay
+        });
+    }
+
+    function convertGpsWeek() {
+        const gpsWeek = parseInt(document.getElementById('gpsWeek').value);
+        const dayOfWeek = parseInt(document.getElementById('dayOfWeek').value);
+
+        const baseDate = new Date(Date.UTC(1980, 0, 6));
+        const date = new Date(baseDate.getTime() + (gpsWeek * 7 + dayOfWeek) * 24 * 60 * 60 * 1000);
+
+        const year = date.getUTCFullYear();
+        const startOfYear = new Date(Date.UTC(year, 0, 1));
+        const doy = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
+
+        const yearMonthDay = date.toISOString().split('T')[0];
+
+        displayOutput({
+            yearDoy: `${year}-${String(doy).padStart(3, '0')}`,
+            yearMonthDay: yearMonthDay
+        });
+    }
+
+    function convertYearMonthDay() {
+        const year = parseInt(document.getElementById('year2').value);
+        const month = parseInt(document.getElementById('month').value) - 1;
+        const day = parseInt(document.getElementById('day').value);
+        const date = new Date(Date.UTC(year, month, day));
+
+        const startOfYear = new Date(Date.UTC(year, 0, 1));
+        const doy = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
+
+        const gpsWeek = Math.floor((date - new Date(Date.UTC(1980, 0, 6))) / (7 * 24 * 60 * 60 * 1000));
+        const dayOfWeek = date.getUTCDay();
+
+        displayOutput({
+            yearDoy: `${year}-${String(doy).padStart(3, '0')}`,
+            gpsWeek: `${gpsWeek}-${dayOfWeek}`
+        });
+    }
+
+    function displayOutput(data) {
+        const outputDiv = document.getElementById('output');
+        outputDiv.innerHTML = '';
+
+        for (const [key, value] of Object.entries(data)) {
+            const p = document.createElement('p');
+            p.textContent = `${key}: ${value}`;
+            outputDiv.appendChild(p);
+        }
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('light-theme');
+    }
+</script>
+
+</body>
+</html>
